@@ -1,12 +1,12 @@
-
-// Metinleri ve ses dosyalarını içeren JSON dosyasını yükle
-
+const mainStoryDiv = document.querySelector("#hikaye-metni");
+let wordFunc = null;
+let initWords = null;
 
 function satirlaraAyir(metin) {
   const satirlar = [];
   let satir = '';
   for (let i = 0; i < metin.length; i++) {
-    if (metin[i] === '\n' || satir.length === 100) {
+    if (satir.length === 100) {
       satirlar.push(satir);
       satir = '';
     }
@@ -17,123 +17,105 @@ function satirlaraAyir(metin) {
 }
 
 
- fetch("hikaye.json").then(response=>response.json())
-.then(data => { 
 
-  var result = Object.keys(data).map((key) => [Number(key), data[key]]);
-  
-/*   console.log(result[0][1].turkce); */
+console.log("sddddsdf");
+fetch("hikaye.json").then(response => response.json())
+  .then(data => {
 
-  const hikayeMetni =result[0][1].turkce; 
-  const satirlar= satirlaraAyir(hikayeMetni);
-  let pEtiketleri = '';
-    for (let i = 0; i < satirlar.length; i++) {
-      pEtiketleri += '<p id="p'+i+'" class="arkaplan-renkli">' + satirlar[i] + '</p>';
+    let pEtiketleri = '';
+    let _kelimeler = '';
+    let kelimeler = '';
+    let startTime = 0;
+    let endTime = 0;
+    var result = Object.keys(data).map((key) => [Number(key), data[key]]);
+
+
+    let hikayeMetni = result[0][1].bolum + '<br>' + result[0][1].turkce;
+
+    _kelimeler = hikayeMetni.split(" ");
+
+    
+
+    for (let i = 0; i < _kelimeler.length; i++) {
+
+      kelimeler += `<span class="storyContent" id="p${i}" onclick=translations(p${i})> ${_kelimeler[i]} </span>`;
+      mainStoryDiv.innerHTML = kelimeler;
+
+      
     }
-  var tamMetinDiv= document.getElementById('hikaye-metni');
-  tamMetinDiv.innerHTML = pEtiketleri;
-/* document.body.appendChild(div); */
-  
- // synth.speak(utterance);
-}).catch(error => console.error(error));
+
+
+    let storyWords = document.querySelectorAll(".storyContent");
+    console.log(typeof (_kelimeler));
+        console.log("kelimeleeeer", _kelimeler);
+
+
+      
+    const wordProcess = (words) => {
+
+       
+        let index = 0;
+        
+        let intervalId = setInterval(function () {
+          
+          words[index].style.backgroundColor = "yellow";
+          index++;
+          if (index === words.length) {
+            clearInterval(intervalId);
+          }
+
+          document.getElementById("stop-button").addEventListener("click", function () {
+
+            audio.pause();
+            clearInterval(intervalId);
+          });
+        }, 640);
+
+  }
+
+  var duration;
+  let sure;
+  document.getElementById("play-button").addEventListener("click", () => {
+    playAudio();
+     duration = audio.duration;
+      sure=(((duration*1000)/_kelimeler.length));
+     console.log("www",parseFloat(sure));
+  });
 
 
 
-const translations = [
-  "Red Riding Hood set out to go back to her home to bring bread and milk to her old mother.",
-  "On the way, she met a wolf who asked her, 'Where are you going, pretty girl?'",
-  "Red Riding Hood replied, 'I'm bringing bread and milk to my old mother.'",
-  "The wolf asked, 'Where does she live?'",
-  "Red Riding Hood cleverly answered the wolf's questions and continued on her way home."
+    // synth.speak(utterance);
+    const playAudio = () => {
+      audio.play();
+      
+      wordProcess(storyWords);
+    }
+ 
+  }).catch(error => console.error(error));
+
+const _translations = [
+  "basin",
+  "side'",
+  "eagle’s nest",
+
 ];
 
 const audio = document.getElementById("audio");
 let currentSentence = 0;
 let intervalId;
 
+function translations(id){
+
+  alert(_translations[0])
 
 
-const playAudio = () => {
-  audio.play();
-  intervalId = setInterval(highlightCurrentSentence, 1000);
-  audio.addEventListener("ended", () => {
-    clearInterval(intervalId);
-  });
-
-audio.addEventListener('play', () => {
-let currentPosition = 0;
-
-const satirlar = document.querySelectorAll('#hikaye-metni p');
-
-    for (let i = 0; i < satirlar.length; i++) {
-
-    var id = document.getElementsByTagName("p")[i].id;
-     
-    if(id=='p'+i){
-
-      var classs= document.getElementById(id);
-      
-    setTimeout(
-     
-      classs.classList.add('animasyon'),100     
-
-
-    );
-  }
 }
 
-});
-
-}
- 
-
-var highlightCurrentSentence = () => {
-  
-  
-  
-
-  if (currentSentence < translations.length) {
-    document.querySelectorAll("p").forEach((p, index) => {
-
-      
-      if (index === currentSentence) {
-
-        setTimeout(p.classList.add("highlight"), 5000);
-        
-      } else {
-
-        p.classList.remove("highlight");
-
-      }
-    });
-    currentSentence++;
-  } else {
-    clearInterval(intervalId);
-  }
-}
-
-document.getElementById("play-button").addEventListener("click", () => {
-  playAudio();
-});
-
-document.querySelectorAll("p").forEach((p, index) => {
-  p.addEventListener("click", () => {
-    currentSentence = index;
-    highlightCurrentSentence();
-  });
-});
-
-
-document.getElementById("stop-button").addEventListener("click",function(){
-
-audio.pause();
-
-});
-
-document.getElementById("p1").addEventListener("click", function() {
+/*  document.getElementById("p22").addEventListener("click", function() {
   this.innerHTML = translations[0];
-});
 
+}); */
+/*
 document.getElementById("p2").addEventListener("click", function() {
   this.innerHTML = translations[1];
 });
@@ -149,4 +131,4 @@ document.getElementById("p4").addEventListener("click", function() {
 document.getElementById("p5").addEventListener("click", function() {
   this.innerHTML = translations[4];
 });
-
+ */
