@@ -18,7 +18,6 @@ function satirlaraAyir(metin) {
 
 
 
-console.log("sddddsdf");
 fetch("hikaye.json").then(response => response.json())
   .then(data => {
 
@@ -87,12 +86,20 @@ fetch("hikaye.json").then(response => response.json())
     // synth.speak(utterance);
     const playAudio = () => {
       audio.play();
-      
+      audio
       wordProcess(storyWords);
     }
  
   }).catch(error => console.error(error));
 
+  audio.addEventListener('canplaythrough', function() {
+    const duration = audioElement.duration * 1000;
+    const wordStart = 1000; // kelimenin başlangıç zamanı
+    const wordEnd = 1500; // kelimenin bitiş zamanı
+  
+    const wordDuration = wordEnd - wordStart;
+    console.log("Kelimenin süresi: " + wordDuration + " ms");
+  });
 const _translations = [
   "basin",
   "side'",
